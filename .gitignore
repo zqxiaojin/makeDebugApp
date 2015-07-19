@@ -1,0 +1,5 @@
+.DS_Store
+*.dir
+embedded.mobileprovision
+iPhoneEntitlement.plist
+*.ipa
