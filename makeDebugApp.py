@@ -30,7 +30,8 @@ shellTargetIPA = shellquote(targetIPA)
 shellEntitlementXML = shellquote(entitlementXML)
 shellSourceIPA = shellquote(sourceIPA)
 
-codeSignIdentifier = sys.argv[2]
+# newBundleID = sys.argv[2];
+codeSignIdentifier = '61E24C3697F474E527A3261D446ED0834A884ABF'
 
 print 'source :' + sourceIPA
 print 'temp :' + targetTempDir
@@ -91,7 +92,10 @@ os.system('rm -rf "{}"/PlugIns'.format(appPath));
 infoPlistPath = commands.getoutput('find "{}" -depth 1 -iname info.plist'.format(appPath))
 commands.getoutput('plutil -convert xml1 "{}" '.format(infoPlistPath))
 info = plistlib.readPlist(infoPlistPath)
+# info['CFBundleIdentifier']=newBundleID
+# print newBundleID
 bundleID = info['CFBundleIdentifier']
+plistlib.writePlist(info, infoPlistPath)
 commands.getoutput('plutil -convert binary1 "{}" '.format(infoPlistPath))
 
 if bundleID == '':
@@ -122,6 +126,10 @@ print 'codesign :' + signCommand
 os.system(signCommand)
 
 
+signdyLibCommand = 'find "{}"  -name *.dylib -exec /usr/bin/codesign  --force --sign "{}" --preserve-metadata=identifier,entitlements --timestamp=none {} \;'.format(appPath,codeSignIdentifier, "{}")
+
+print 'codesign :' + signdyLibCommand
+os.system(signdyLibCommand)
 
 #完成操作,重新打包
 os.system('cd ' + shellTargetTempDir \
